@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>user main page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="style.css" rel="stylesheet" type="text/css" />
+<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="js/cufon-yui.js" type="text/javascript"></script>
+<script src="js/cufon-replace.js" type="text/javascript"></script>
+<script src="js/Myriad_Pro_400.font.js" type="text/javascript"></script>
+<!--[if lt IE 7]>
+<link href="ie_style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/ie_png.js"></script>
+<script type="text/javascript">ie_png.fix('.png, .extra-bg, .box, .box1, .box2, .img-list img');</script>
+<![endif]-->
+<style type="text/css">
+<!--
+.style1 {
+	font-size: 36px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	color: #FF3366;
+}
+.style3 {font-family: Georgia, "Times New Roman", Times, serif}
+.style6 {color: #0066FF}
+.style7 {color: #FFFF00}
+.style8 {color: #FFFF00; font-weight: bold; }
+-->
+</style>
+</head>
+<body id="page1">
+<div id="main">
+  <div class="extra-bg"></div>
+  <!-- header -->
+  <div id="header">
+    <div class="row-1">
+      <ul class="top-links">
+        <li><a href="#"><img alt="" src="images/home-icon.gif" /></a></li>
+        <li><a href="#"><img alt="" src="images/mail-icon.gif" /></a></li>
+      </ul>
+	  <%String user=(String)application.getAttribute("user");%>
+      <ul class="nav">
+        <li class="first"><a href="usermain.jsp">Home</a></li>
+	  <li><a href="#"><span><%=user%></span></a> </li>
+	        <li><a href="userlogin.jsp">Logout</a></li>
+      </ul>
+    </div>
+    <div class="row-2 style6">
+      <p  class="first  style1">&nbsp;</p>
+      </div>
+  </div>
+  <!-- content -->
+  <div id="content">
+    <div class="wrapper">
+      <div class="aside">
+        <div class="inner_copy"></div>
+        <div class="section">
+          <!-- box begin -->
+          <div class="box">
+            <div class="inner">
+              <h4><span><span>Menu</span></span></h4>
+              <div class="inner">
+                <ul>
+                  <li><a href="usermain.jsp">Home</a></li>
+				  <li><a href="user_details.jsp">View Profile</a></li>
+				  <li><a href="userlogin.jsp">Logout</a> </li>
+			    </ul>
+              </div>
+            </div>
+          </div>
+          <!-- box end -->
+        </div>
+        <!-- box1 begin -->
+       
+        <!-- box1 end -->
+      </div>
+      <div class="mainContent">
+        <div class="section">
+          <h2 class="style3">search Friends !!! </h2>
+          <div class="indent">
+           
+           <table width="342" align="center"  cellpadding="0" cellspacing="0"  >
+        <%@ include file="connect.jsp" %>
+	<%@ page import="java.util.Date,java.lang.*" %>
+<%@ page import="java.text.SimpleDateFormat, java.util.Date"%>
+		<%
+	
+    
+						String s1,s2,s3,s4;
+						int i=0;
+						String fname=request.getParameter("key");
+						//application.setAttribute("key",fname);
+						
+						SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");
+						SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
+						Date now = new Date();
+						String strDate = sdfDate.format(now);
+						String strTime = sdfTime.format(now);
+						String dt = strDate + "   " + strTime;
+       
+						try 
+						{
+							String status1=null;
+						   	String status=null;
+							String status2=null;
+						   	String sql="select * from user where username LIKE '%"+fname+"%' and username!='"+user+"'"; 
+						   	Statement st=connection.createStatement();
+						   	ResultSet rs=st.executeQuery(sql);
+					   		while(rs.next()==true)
+					   		{
+								i=rs.getInt(1);
+								s1=rs.getString(3);
+								status ="request";
+								
+								String sql1="select * from friends where (rfrom='"+user+"' and rto='"+s1+"') || (rfrom='"+s1+"' and rto='"+user+"')";
+								Statement st1=connection.createStatement();
+								ResultSet rs1=st1.executeQuery(sql1);
+								if(rs1.next())
+									{
+										String rfrom =rs1.getString(2);
+										String rto =rs1.getString(3);
+										status1 = rs1.getString(4);
+										
+										
+										
+										if(status1.equalsIgnoreCase("waiting"))
+										{
+											status="sent";
+										}
+										else if(status1.equalsIgnoreCase("Accepted"))
+										{
+											status="Already Friend";
+										}
+										
+										
+									}	
+								
+								
+					%>
+          
+			<tr>
+					<td width="126" rowspan="3" valign="middle" >
+						<div class="style7" style="margin:10px 13px 10px 13px;" ><a class="#" id="img1" href="#" >
+						 <input  name="image" type="image" src="profile_pic.jsp?id=<%=i%>&type=<%="user"%>" style="width:100px; height:100px;"  />
+			  </a></div>					</td>
+		  </tr>
+             
+             <tr> <td width="50" height="65" valign="middle" bgcolor="#FF0000" style="color:#000000;"><div align="center" class="style8">Name</div></td>
+			 <td width="94" valign="middle" height="65" style="color:#000000;">&nbsp;&nbsp;
+               <%out.println(s1);%></td></tr>
+				   <tr>
+				    <td width="50" height="26" valign="middle" bgcolor="#FF0000" style="color:#000000;"><div align="center" class="style8">Status</div></td>
+              <%
+						if(status.equals("Already Friend")){
+						%>
+              <td  width="94" valign="middle" height="26" style="color:#000000;"align="center"><%=status %>&nbsp;</td>
+              <%
+						}else if(status.equals("sent")){
+						%>
+              <td  width="39" valign="middle" height="26" style="color:#000000;"align="center"><%=status %>&nbsp;</td>
+              <%
+						}
+						else{
+						
+						%>
+              <td  width="31" valign="middle" height="26" style="color:#000000;"align="center"><a href="updaterequest.jsp?username=<%=s1%>&id=<%=i%>"><%=status %>&nbsp;</a></td>
+              <%}
+						%>
+            </tr>
+            <%
+				
+						/*String sql3="insert into search_history(username,keyword,dt)values('"+user+"','"+fname+"','"+dt+"')";
+						Statement st3=connection.createStatement();
+						st3.executeUpdate(sql3);*/
+							
+					}
+					
+					connection.close();
+					
+					}
+					catch(Exception e)
+					{
+						out.println(e.getMessage());
+					}
+					%>
+      </table>
+              <p>&nbsp;</p>
+			  
+              <p align="right"><a href="searchfriend.jsp">Back</a></p>
+          </div>
+        </div>
+        <!-- box2 begin -->
+        <div class="box2">
+          <div class="inner">
+           </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- box2 end -->
+      </div>
+    </div>
+  </div>
+  <!-- footer -->
+  <div id="footer">
+    <ul class="nav">
+      <li></li>
+    </ul>
+    <div class="wrapper aligncenter"></div>
+  </div>
+</div>
+<script type="text/javascript"> Cufon.now(); </script>
+<div align=center></div>
+</body>
+</html>
